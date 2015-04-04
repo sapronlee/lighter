@@ -1,12 +1,10 @@
 package main
 
 import (
-	"github.com/go-martini/martini"
-	"lighter/web"
+	"lighter/config"
 )
 
 func main() {
-	server := martini.Classic()
-	web.RegiterRoutes(server)
-	server.Run()
+	app := config.InitApplication()
+	app.Martini.Run()
 }
