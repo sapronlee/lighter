@@ -16,12 +16,23 @@ type App struct {
 
 func ClassicApp() *App {
 	// 初始化martini
-	mart := martini.Classic()
+	r := martini.NewRouter()
+	mart := martini.New()
+
+	mart.MapTo(r, (*martini.Routes)(nil))
+
+	mart.Use(Logger())
+	mart.Use(martini.Recovery())
+	mart.Use(martini.Static("public", martini.StaticOptions{
+		SkipLogging: true,
+	}))
 	mart.Use(render.Renderer(render.Options{
 		Directory: "views",
 		Layout:    "layout",
 		Funcs:     []template.FuncMap{helpers.AssetHelpers()},
 	}))
+
+	mart.Action(r.Handle)
 
 	// 加载配置文件
 	conf, err := config.ReadDefault("config/config.ini")
@@ -29,7 +40,7 @@ func ClassicApp() *App {
 		panic(err)
 	}
 
-	app := &App{Martini: mart, Env: martini.Env, config: conf}
+	app := &App{Martini: &martini.ClassicMartini{mart, r}, Env: martini.Env, config: conf}
 	registerRoutes(app)
 	return app
 }
