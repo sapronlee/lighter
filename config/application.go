@@ -4,6 +4,8 @@ import (
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
 	"github.com/robfig/config"
+	"html/template"
+	"lighter/helpers"
 )
 
 type App struct {
@@ -18,6 +20,7 @@ func ClassicApp() *App {
 	mart.Use(render.Renderer(render.Options{
 		Directory: "views",
 		Layout:    "layout",
+		Funcs:     []template.FuncMap{helpers.AssetHelpers()},
 	}))
 
 	// 加载配置文件
